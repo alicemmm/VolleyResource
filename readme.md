@@ -479,6 +479,10 @@ run()方法就是在主线程当中运行的了，我们看下run()方法中的�
 这样，每条请求都会回调到这个方法，最后我们再在这个方法中将响应的数据回调到Response.Listener的onResponse()方法中就可以了。<br>
 
 <br>
+最后添加一张volley请求流程图
+
+![Alt text](https://raw.githubusercontent.com/android-cn/android-open-project-analysis/master/tool-lib/network/volley/image/Volley-run-flow-chart.png "picture")
+
 <br>
 <br>
 
