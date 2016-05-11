@@ -1,5 +1,7 @@
 package com.perasia.volleyresource;
 
+import android.util.Log;
+
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -10,6 +12,7 @@ import com.google.gson.Gson;
 import java.io.UnsupportedEncodingException;
 
 public class GsonRequest<T> extends Request<T> {
+    private static final String TAG = GsonRequest.class.getSimpleName();
 
     private final Response.Listener<T> mListener;
 
@@ -33,12 +36,15 @@ public class GsonRequest<T> extends Request<T> {
         try {
             String jsonString = new String(response.data,
                     HttpHeaderParser.parseCharset(response.headers));
+
+            Log.e(TAG, "jsonString=" + jsonString);
+
+            Log.e(TAG,"header="+response.headers);
             return Response.success(mGson.fromJson(jsonString, mClass),
                     HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
         }
-
     }
 
     @Override

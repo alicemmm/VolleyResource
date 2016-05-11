@@ -37,7 +37,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         imageView = (NetworkImageView) findViewById(R.id.network_image_view);
 
-        volleyRequest();
+//        volleyRequest();
+
+        gsonRequest();
     }
 
     private void volleyRequest() {
@@ -226,15 +228,16 @@ public class MainActivity extends AppCompatActivity {
 
         RequestQueue requestQueue = VolleyManager.getRequestQueue();
 
-        GsonRequest<Weather> weatherGsonRequest = new GsonRequest<Weather>(url, Weather.class, new Response.Listener<Weather>() {
-            @Override
-            public void onResponse(Weather weather) {
-                WeatherInfo weatherInfo = weather.getWeatherinfo();
-                Log.d("TAG", "city is " + weatherInfo.getCity());
-                Log.d("TAG", "temp is " + weatherInfo.getTemp());
-                Log.d("TAG", "time is " + weatherInfo.getTime());
-            }
-        }, new Response.ErrorListener() {
+        GsonRequest<Weather> weatherGsonRequest = new GsonRequest<Weather>(url, Weather.class,
+                new Response.Listener<Weather>() {
+                    @Override
+                    public void onResponse(Weather weather) {
+                        WeatherInfo weatherInfo = weather.getWeatherinfo();
+                        Log.e("TAG", "city is " + weatherInfo.getCity());
+                        Log.e("TAG", "temp is " + weatherInfo.getTemp());
+                        Log.e("TAG", "time is " + weatherInfo.getTime());
+                    }
+                }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
 

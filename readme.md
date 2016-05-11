@@ -2,15 +2,15 @@
 
 1、首先volley初始化<br><br>
 
-        <public static RequestQueue newRequestQueue(Context context) {
+        public static RequestQueue newRequestQueue(Context context) {
              return newRequestQueue(context, null);
-         } >
+         }
 ***
 
 volley初始化代码
 
 
-        <public static RequestQueue newRequestQueue(Context context, HttpStack stack, int maxDiskCacheBytes) {
+        public static RequestQueue newRequestQueue(Context context, HttpStack stack, int maxDiskCacheBytes) {
                  File cacheDir = new File(context.getCacheDir(), DEFAULT_CACHE_DIR);
 
                  String userAgent = "volley/0";
@@ -48,7 +48,7 @@ volley初始化代码
                  queue.start();
 
                  return queue;
-             }>
+             }
 
 我们发现24行判断stack是空，就创建一个HttpStack对象，这里根据版本号创建不同的实例，查看源码，发现HurlStack内部<br>
 是使用HttpURLConnection进行网络通信，HttpClientStack内部则是使用HttpClient进行网络通信。<br>
@@ -59,7 +59,7 @@ volley初始化代码
 
 我们看一下start方法都干了什么：
 
-        <public void start() {
+        public void start() {
                 stop();  // Make sure any currently running dispatchers are stopped.
                 // Create the cache dispatcher and start it.
                 mCacheDispatcher = new CacheDispatcher(mCacheQueue, mNetworkQueue, mCache, mDelivery);
@@ -72,7 +72,7 @@ volley初始化代码
                     mDispatchers[i] = networkDispatcher;
                     networkDispatcher.start();
                 }
-            }>
+            }
 
 这里先是创建了一个CacheDispatcher的实例，然后调用了它的start()方法，接着在一个for循环里去创建NetworkDispatcher的实例，<br>
 并分别调用它们的start()方法。这里的CacheDispatcher和NetworkDispatcher都是继承自Thread的，而默认情况下for循环会执行四次，<br>
@@ -122,14 +122,14 @@ volley初始化代码
                      return request;
                  }
              }
-        >
+
 
 可以看出，97行，判断该请求是否可以缓存，若可以缓存了就加入队列，不能缓存在120行加入缓存队列。默认情况下所有的请求<br>
 都会加入缓存队列，我们可以调用Request的setShouldCache(false)方法来改变这一默认行为。
 
 当请求添加到缓存队列，我们就要看在后台运行的缓存线程在做了什么
 
-        <public class CacheDispatcher extends Thread {
+        public class CacheDispatcher extends Thread {
 
              ...
 
@@ -220,7 +220,7 @@ volley初始化代码
                  }
              }
          }
-        >
+
 
 我们只看run方法里面的代码，在一个无限循环中，第168行试图取出某个响应结果，如果取不到，就添加到网络请求队列，往下<br>
 如果取出了响应结构，就会判断该消息是否过期，过期了就加入到网络请求队列，否则直接使用缓存中请求结果信息。<br>
@@ -228,7 +228,7 @@ Response<?> response = request.parseNetworkResponse()方法来对数据进行解
 
 下面看看请求网络线程在做什么：
 
-        <public class NetworkDispatcher extends Thread {
+        public class NetworkDispatcher extends Thread {
 
             ...
 
@@ -300,12 +300,12 @@ Response<?> response = request.parseNetworkResponse()方法来对数据进行解
                  }
              }
          }
-        >
+
 
 同样维持一个死循环，267行 NetworkResponse networkResponse = mNetwork.performRequest(request);<br>
 进行了网络请求，因为Network是一个接口，所以具体实现是在BasicNetwork。
 
-        <public class BasicNetwork implements Network {
+        public class BasicNetwork implements Network {
 
              ...
 
@@ -412,7 +412,7 @@ Response<?> response = request.parseNetworkResponse()方法来对数据进行解
              }
 
            ...
-         }>
+         }
 
 第323行调用httpResponse = mHttpStack.performRequest(request, headers);<br>
 进行网络请求，请求具体实现是HttpURLConnection和HttpClient，有兴趣可以看一下源码。<br>
@@ -426,17 +426,17 @@ NetworkResponse中的数据，以及将数据写入到缓存，这个方法的�
 在解析完了NetworkResponse中的数据之后，又会调用ExecutorDelivery的postResponse()方法来回调解析出的数据，代码如下：<br>
 
 
-        <public void postResponse(Request<?> request, Response<?> response, Runnable runnable) {
+        public void postResponse(Request<?> request, Response<?> response, Runnable runnable) {
              request.markDelivered();
              request.addMarker("post-response");
              mResponsePoster.execute(new ResponseDeliveryRunnable(request, response, runnable));
          }
-        >
+
 
 其中，在mResponsePoster的execute()方法中传入了一个ResponseDeliveryRunnable对象，就可以保证该对象中的<br>
 run()方法就是在主线程当中运行的了，我们看下run()方法中的代码是什么样的：<br>
 
-        <private class ResponseDeliveryRunnable implements Runnable {
+        private class ResponseDeliveryRunnable implements Runnable {
              private final Request mRequest;
              private final Response mResponse;
              private final Runnable mRunnable;
@@ -473,7 +473,7 @@ run()方法就是在主线程当中运行的了，我们看下run()方法中的�
                      mRunnable.run();
                  }
             }
-         }  >
+         }
 
 我们发现在在460行调用了mRequest.deliverResponse(mResponse.result);这个是在我们自定义Request需要重写的方法，<br>
 这样，每条请求都会回调到这个方法，最后我们再在这个方法中将响应的数据回调到Response.Listener的onResponse()方法中就可以了。<br>
