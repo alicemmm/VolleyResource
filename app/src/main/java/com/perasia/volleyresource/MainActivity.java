@@ -1,11 +1,15 @@
 package com.perasia.volleyresource;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -17,11 +21,18 @@ import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
+import com.perasia.volleyresource.download.DefalutRetryPolicy;
+import com.perasia.volleyresource.download.DownloadManager;
+import com.perasia.volleyresource.download.DownloadRequest;
+import com.perasia.volleyresource.download.DownloadStatusReqListener;
+import com.perasia.volleyresource.download.QuickDownloadManager;
+import com.perasia.volleyresource.download.RetryPolicy;
 
 import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,16 +42,70 @@ public class MainActivity extends AppCompatActivity {
 
     private NetworkImageView imageView;
 
+    int downloadId1;
+
+    private Button button;
+
+    ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imageView = (NetworkImageView) findViewById(R.id.network_image_view);
+        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        button = (Button) findViewById(R.id.download_btn);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                quickDownload();
+                button.setClickable(false);
+            }
+        });
 
 //        volleyRequest();
 
-        gsonRequest();
+//        gsonRequest();
     }
+
+
+    private void quickDownload() {
+        String url = "http://jsp.jisuoping.com/apk/2016/Yuwan-0.6.16.0-81014.apk";
+        QuickDownloadManager downloadManager = new QuickDownloadManager();
+        RetryPolicy retryPolicy = new DefalutRetryPolicy();
+
+        File filesDir = getExternalCacheDir();
+        Uri downloadUri = Uri.parse(url);
+        Uri destinationUri = Uri.parse(filesDir + "/test_81014.apk");
+        final DownloadRequest downloadRequest1 = new DownloadRequest(downloadUri)
+                .setDestinationUri(destinationUri).setPriority(DownloadRequest.Priority.LOW)
+                .setRetryPolicy(retryPolicy)
+                .setDownloadContext("Download1")
+                .setDownloadStatusListener(new DownloadStatusReqListener() {
+                    @Override
+                    public void onDownloadComplete(DownloadRequest downloadRequest) {
+                        Log.e(TAG, "onDownloadComplete");
+                    }
+
+                    @Override
+                    public void onDownloadFailed(DownloadRequest downloadRequest, int errCode, String errMsg) {
+                        Log.e(TAG, "onDownloadFailed" + errMsg);
+                    }
+
+                    @Override
+                    public void onProgress(DownloadRequest downloadRequest, long total, long download, int progress) {
+                        float pro = (float) download;
+                        progressBar.setProgress(progress);
+                        Log.e(TAG, "onProgress=" + pro / total + "%----" + progress);
+                    }
+                });
+
+        if (downloadManager.query(downloadId1) == DownloadManager.STATUS_NOT_FOUND) {
+            downloadId1 = downloadManager.add(downloadRequest1);
+        }
+
+    }
+
 
     private void volleyRequest() {
         String url = "http://www.baidu.com";
