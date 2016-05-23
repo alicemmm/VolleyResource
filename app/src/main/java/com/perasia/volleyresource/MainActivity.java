@@ -1,11 +1,13 @@
 package com.perasia.volleyresource;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -26,6 +28,7 @@ import com.perasia.volleyresource.download.DownloadRequest;
 import com.perasia.volleyresource.download.DownloadStatusReqListener;
 import com.perasia.volleyresource.download.QuickDownloadManager;
 import com.perasia.volleyresource.download.RetryPolicy;
+import com.perasia.volleyresource.simpleMultiDownload.MultiDownloadActivity;
 
 import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
@@ -51,16 +54,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        imageView = (NetworkImageView) findViewById(R.id.network_image_view);
-//        progressBar = (ProgressBar) findViewById(R.id.progressbar);
-//        button = (Button) findViewById(R.id.download_btn);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
+        imageView = (NetworkImageView) findViewById(R.id.network_image_view);
+        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        button = (Button) findViewById(R.id.download_btn);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 //                quickDownload();
 //                button.setClickable(false);
-//            }
-//        });
+
+                startActivity(new Intent(MainActivity.this, MultiDownloadActivity.class));
+            }
+        });
 
         volleyRequest();
 
