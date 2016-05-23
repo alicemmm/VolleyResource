@@ -2,13 +2,34 @@ package com.perasia.volleyresource;
 
 
 public class Weather {
-    private WeatherInfo weatherinfo;
 
-    public WeatherInfo getWeatherinfo() {
-        return weatherinfo;
+    private String city;
+
+    private String temp;
+
+    private String time;
+
+    public String getCity() {
+        return city;
     }
 
-    public void setWeatherinfo(WeatherInfo weatherinfo) {
-        this.weatherinfo = weatherinfo;
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getTemp() {
+        return temp;
+    }
+
+    public void setTemp(String temp) {
+        this.temp = temp;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

@@ -14,7 +14,7 @@ import java.io.UnsupportedEncodingException;
 public class GsonRequest<T> extends Request<T> {
     private static final String TAG = GsonRequest.class.getSimpleName();
 
-    private final Response.Listener<T> mListener;
+    private Response.Listener<T> mListener;
 
     private Gson mGson;
 
@@ -32,6 +32,12 @@ public class GsonRequest<T> extends Request<T> {
     }
 
     @Override
+    protected void onFinish() {
+        super.onFinish();
+        mListener = null;
+    }
+
+    @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         try {
             String jsonString = new String(response.data,
@@ -39,7 +45,6 @@ public class GsonRequest<T> extends Request<T> {
 
             Log.e(TAG, "jsonString=" + jsonString);
 
-            Log.e(TAG,"header="+response.headers);
             return Response.success(mGson.fromJson(jsonString, mClass),
                     HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {

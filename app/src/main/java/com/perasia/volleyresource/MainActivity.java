@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -52,20 +51,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        imageView = (NetworkImageView) findViewById(R.id.network_image_view);
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
-        button = (Button) findViewById(R.id.download_btn);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                quickDownload();
-                button.setClickable(false);
-            }
-        });
+//        imageView = (NetworkImageView) findViewById(R.id.network_image_view);
+//        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+//        button = (Button) findViewById(R.id.download_btn);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                quickDownload();
+//                button.setClickable(false);
+//            }
+//        });
 
-//        volleyRequest();
+        volleyRequest();
 
-//        gsonRequest();
+        gsonRequest();
+
+//        myXMLRequest();
     }
 
 
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void volleyRequest() {
-        String url = "http://www.baidu.com";
+        String url = "http://www.weather.com.cn/data/sk/101010100.html";
 
         RequestQueue requestQueue = VolleyManager.getRequestQueue();
 
@@ -297,10 +298,9 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<Weather>() {
                     @Override
                     public void onResponse(Weather weather) {
-                        WeatherInfo weatherInfo = weather.getWeatherinfo();
-                        Log.e("TAG", "city is " + weatherInfo.getCity());
-                        Log.e("TAG", "temp is " + weatherInfo.getTemp());
-                        Log.e("TAG", "time is " + weatherInfo.getTime());
+                        Log.e("TAG", "city is " + weather.getCity());
+                        Log.e("TAG", "temp is " + weather.getTemp());
+                        Log.e("TAG", "time is " + weather.getTime());
                     }
                 }, new Response.ErrorListener() {
             @Override
